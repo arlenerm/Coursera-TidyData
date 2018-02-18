@@ -44,5 +44,11 @@ acc_tidy %>%
         group_by(subject,activity) %>%
         summarise_all(funs(mean))  %>%
         write.table(file="accTidy.txt", row.name=FALSE) 
+```  
+  
+To view the resulting tidy data, use this script to load into R and view contents.  
+  
 ``` 
-
+tidydata <- read.table("accTidy.txt", header = TRUE)
+View(tidydata)
+``` 
