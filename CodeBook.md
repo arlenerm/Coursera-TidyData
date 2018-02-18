@@ -1,4 +1,71 @@
-# accTidy.txt CODE BOOK
+# CODE BOOK
+
+1.  Load the raw data sets with the following references listed below.  Note that the data sets in the inertial signals were not used because there are no mean and standard deviation values involved.  
+  
+* **activity_labels** <- read.table ("activity_labels.txt")  
+* **features** <- read.table ("features.txt")  
+* **subject_test** <- read.table ("subject_test.txt")  
+* **x_test** <- read.table ("x_test.txt")  
+* **y_test** <- read.table ("y_test.txt")  
+* **subject_train** <- read.table ("subject_train.txt")  
+* **x_train** <- read.table ("x_train.txt")  
+* **y_train** <- read.table ("y_train.txt")  
+  
+2.  Use the **activity_labels** data set to assign descriptive activity names to name the activities in the data set.  Also used "activity" to appropriately label the activity variable in the test and train label data sets (**y_test** and **y_train**)  
+  
+```
+y_test <- data.frame(activity = activity_labels$V2[y_test$V1])  
+y_train <- data.frame(activity = activity_labels$V2[y_train$V1])
+```  
+  
+3.  Use "subject" to rename the variable / column in the subject data sets (**subject_test** and **subject_train**)  
+  
+```
+colnames(subject_train) <- c("subject")  
+colnames(subject_test) <- c("subject")
+```  
+  
+4.  Use the **features** data set to appropriately label variables in the measurements data sets (**x_test** and **y_test**) with descriptive variable names.  This step is important to prior to being able to extract only the mean and standard deviation variables needed.  
+  
+```
+colnames(x_test) <- features$V2  
+colnames(x_train) <- features$V2
+```  
+  
+5.  There are 2 steps followed in merging the test and train data sets.   
+  
+* First, bind the columns / variables together composing of subject (**subject_test** and **subject_train**), activity(**y_test** and **y_train**), and measurements (**x_test** and **y_test**).  
+  
+```
+ds_test  <- bind_cols(subject_test, y_test, x_test)  
+ds_train <- bind_cols(subject_train, y_train, x_train)
+```  
+  
+* Second, bind the resulting merged test and train data sets from the first step 
+  
+```
+acc_data  <- rbind(ds_test, ds_train)
+```  
+  
+6.  Extract only the mean and standard deviation for each measurement  
+  
+```
+colnums <- c(1,2, grep("(mean|std)\\(\\)", colnames(acc_data)))  
+acc_tidy <- acc_data[colnums]
+```  
+  
+7.  As a final step to the tidy data analysis, compute the average of each of the mean and standard deviation measurement variables grouped by the subject and the activity performed while wearing the sensor  
+  
+```
+acc_tidy %>%  
+        group_by(subject,activity) %>%  
+        summarise_all(funs(mean))  %>%  
+        write.table(file="accTidy.txt", row.name=FALSE)  
+```  
+   
+The resulting tidy data set is saved in the file called accTidy.txt described here.
+
+## accTidy.txt
 
 This contains the description of the data in accTidy.txt indicating all the variables and calculations done. A total of 68 variables are desribed:  
 * 1 - variable shows the **subject** who volunteered to perform the activities while wearing a smart phone  
